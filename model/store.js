@@ -1,11 +1,12 @@
 const Part = require('./Part.js');
 const model = require('./model.js');
+const errorMessages = require('../constants/errorMessages.js');
 const store = {};
 
 store.createPart = (partInfo, callback) => {
   const { id, name, description } = partInfo;
   if (model.nodes[id]) {
-    return callback('node already exists', null);
+    return callback(errorMessages.partAlreadyExists, null);
   }
   model.nodes[id] = new Part(id, name, description);
   model.nodeOrg.allNodes.push(model.nodes[id]);
@@ -15,7 +16,7 @@ store.createPart = (partInfo, callback) => {
 
 store.getAllParts = (callback) => {
   if (!model.nodeOrg.allNodes) {
-    return callback('No parts storage found', null);
+    return callback(errorMessages.cantFindParts, null);
   }
   callback(null, model.nodeOrg.allNodes);
 };
@@ -25,7 +26,7 @@ store.createNewAssembly = (parts, callback) => {
   parentId = parent.id,
   childId = child.id;
   if (!model.nodes[parentId] || !model.nodes[childId]) {
-    return callback('Invalid Part ID', null);
+    return callback(errorMessages.invPartID, null);
   }
 
   model.nodes[parentId].children.push(model.nodes[childId]);
@@ -35,14 +36,14 @@ store.createNewAssembly = (parts, callback) => {
 
 store.updateAssembly = (parentId, childId, callback) => {
   if (!model.nodes[parentId] || !model.nodes[childId]) {
-    return callback('Invalid Part ID', null);
+    return callback(errorMessages.invPartID, null);
   }
 
   const parentNode = model.nodes[parentId],
   childNode = model.nodes[childId];
 
   if (parentNode.children.includes(childNode)) {
-    return callback('Child already exists as component on parent assembly', null);
+    return callback(errorMessages.alreadyChild, null);
   }
 
   if (parentNode.type === 'orphan') {

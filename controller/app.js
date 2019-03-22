@@ -12,6 +12,9 @@ app.use(bodyParser.json());
 //GET requests
 app.get('/parts', (req, res) => {
   store.getAllParts((err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
     res.status(statusCodes.ok).json(data);
   });
 });
@@ -20,7 +23,7 @@ app.get('/parts', (req, res) => {
 app.post('/parts', (req, res) => {
   store.createPart(req.body, (err, data) => {
     if (err) {
-      return res.sendStatus(statusCodes.badRequest);
+      return res.status(statusCodes.badRequest).send(err);
     }
     res.sendStatus(statusCodes.created);
   });
@@ -29,7 +32,7 @@ app.post('/parts', (req, res) => {
 app.post('/assemblies', (req, res) => {
   store.createNewAssembly(req.body, (err, data) => {
     if (err) {
-      return res.sendStatus(statusCodes.badRequest);
+      return res.status(statusCodes.badRequest).send(err);
     }
     res.sendStatus(statusCodes.created);
   });
@@ -41,7 +44,7 @@ app.put('/assemblies/:parentId', (req, res) => {
   const childId = req.body.child.id;
   store.updateAssembly(parentId, childId, (err, data) => {
     if (err) {
-      return res.sendStatus(statusCodes.badRequest);
+      return res.status(statusCodes.badRequest).send(err);
     }
     const statusCode = (data === 'updated') ? statusCodes.ok : statusCodes.created;
     res.sendStatus(statusCode);
