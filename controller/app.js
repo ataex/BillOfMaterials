@@ -10,9 +10,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //GET requests
+app.get('/parts', (req, res) => {
+  store.getAllParts((err, data) => {
+    res.status(statusCodes.ok).json(data);
+  });
+});
 
 //POST requests
-app.post('/part', (req, res) => {
+app.post('/parts', (req, res) => {
   store.createPart(req.body, (err, data) => {
     if (err) {
       return res.sendStatus(statusCodes.badRequest);
