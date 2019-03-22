@@ -6,7 +6,8 @@ model.nodeOrg = {
   topLvlAssems: [],
   subAssems: [],
   components: [],
-  orphans: []
+  orphans: [],
+  allNodes: [],
 };
 
 module.exports = model;

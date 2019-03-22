@@ -12,6 +12,7 @@ store.createPart = (partInfo, callback) => {
     return callback('node already exists', null);
   }
   model.nodes[id] = newPart;
+  model.nodeOrg.allNodes.push(newPart);
   model.nodeOrg.orphans.push(id);
   return callback(null, newPart);
 };
