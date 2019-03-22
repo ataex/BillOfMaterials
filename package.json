@@ -4,7 +4,7 @@
   "description": "bill of materials api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon controller/app.js"
   },
   "author": "Jim Martin",
   "license": "ISC",
