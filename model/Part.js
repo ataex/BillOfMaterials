@@ -3,6 +3,7 @@ let Part = class {
     this.id = id;
     this.name = name;
     this.description = description;
+    this.type = 'orphan';
     this.children = [];
   }
 };

@@ -3,10 +3,10 @@ const model = {};
 model.nodes = {};
 
 model.nodeOrg = {
-  topLvlAssemblies: [],
-  subAssemblies: [],
-  components: [],
-  orphans: [],
+  topLvlAssembly: [],
+  subAssembly: [],
+  component: [],
+  orphan: [],
   allNodes: [],
 };
 

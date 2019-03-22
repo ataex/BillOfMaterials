@@ -4,17 +4,13 @@ const store = {};
 
 store.createPart = (partInfo, callback) => {
   const { id, name, description } = partInfo;
-  const newPart = {
-    part: new Part(id, name, description),
-    location: 'orphans',
-  };
   if (model.nodes[id]) {
     return callback('node already exists', null);
   }
-  model.nodes[id] = newPart;
+  model.nodes[id] = new Part(id, name, description);
   model.nodeOrg.allNodes.push(model.nodes[id]);
-  model.nodeOrg.orphans.push(model.nodes[id]);
-  return callback(null, newPart);
+  model.nodeOrg.orphan.push(model.nodes[id]);
+  return callback(null, model.nodes[id]);
 };
 
 store.getAllParts = (callback) => {
@@ -32,7 +28,7 @@ store.createNewAssembly = (parts, callback) => {
     return callback('Invalid Part ID', null);
   }
 
-  model.nodes[parentId].part.children.push(model.nodes[childId]);
+  model.nodes[parentId].children.push(model.nodes[childId]);
   store.updateAssemblyParentNode(parentId, callback);
   store.updateAssemblyChildNode(childId, callback);
 };
@@ -49,50 +45,51 @@ store.updateAssembly = (parentId, childId, callback) => {
     return callback('Child already exists as component on parent assembly', null);
   }
 
-  if (parentNode.location === 'orphans') {
+  if (parentNode.type === 'orphan') {
     return store.createNewAssembly({'parent': parentNode, 'child': childNode}, callback);
   }
 
-  parentNode.children.push(model.node[childId]);
+  parentNode.children.push(model.nodes[childId]);
   store.updateAssemblyParentNode(parentId, callback);
   store.updateAssemblyChildNode(childId, callback);
 };
 
 store.updateAssemblyParentNode = (parentId, callback) => {
-  let newParentLocation;
-  const currentLocation = model.nodes[parentId].location;
+  let newParentType;
+  const currentType = model.nodes[parentId].type;
 
-  if (currentLocation === 'orphans') {
-    newParentLocation = 'topLvlAssemblies';
-  } else if (currentLocation === 'components') {
-    newParentLocation = 'subAssemblies';
+  if (currentType === 'orphan') {
+    newParentType = 'topLvlAssembly';
+  } else if (currentType === 'component') {
+    newParentType = 'subAssembly';
   }
 
-  if (newParentLocation) {
-    store.updateNodeLocation(parentId, currentLocation, newParentLocation);
+  if (newParentType) {
+    store.updateNodeType(parentId, currentType, newParentType);
   }
 };
 
 store.updateAssemblyChildNode = (childId, callback) => {
-  let newChildLocation;
-  if (model.nodes[childId].location === 'orphans') {
-    newChildLocation = 'components';
-  } else if (model.nodes[childId].location === 'topLvlAssemblies') {
-    newChildLocation = 'subAssemblies';
-  } else if (model.nodes[childId].location === 'components' ||
-            model.nodes[childId].location === 'subAssemblies') {
+  let newChildType;
+  const currentChildType = model.nodes[childId].type;
+  if (currentChildType === 'orphan') {
+    newChildType = 'component';
+  } else if (currentChildType === 'topLvlAssembly') {
+    newChildType = 'subAssembly';
+  } else if (currentChildType === 'component' ||
+            currentChildType === 'subAssembly') {
     return callback(null, 'created');
   }
-  store.updateNodeLocation(childId, model.nodes[childId].location, newChildLocation);
+  store.updateNodeType(childId, currentChildType, newChildType);
   callback(null, 'created');
 };
 
-store.updateNodeLocation = (partId, oldLocation, newLocation) => {
-  model.nodeOrg[oldLocation] = model.nodeOrg[oldLocation].filter((node) => {
-    return node.part.id !== partId;
+store.updateNodeType = (partId, oldType, newType) => {
+  model.nodeOrg[oldType] = model.nodeOrg[oldType].filter((node) => {
+    return node.id !== partId;
   });
-  model.nodeOrg[newLocation].push(model.nodes[partId]);
-  model.nodes[partId].location = newLocation;
+  model.nodeOrg[newType].push(model.nodes[partId]);
+  model.nodes[partId].type = newType;
 };
 
 module.exports = store;
