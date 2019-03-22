@@ -26,6 +26,15 @@ app.post('/parts', (req, res) => {
   });
 });
 
+app.post('/assemblies', (req, res) => {
+  store.createNewAssembly(req.body, (err, data) => {
+    if (err) {
+      return res.sendStatus(statusCodes.badRequest);
+    }
+    res.sendStatus(statusCodes.created);
+  });
+});
+
 //PUT requests
 
 //DELETE requests
