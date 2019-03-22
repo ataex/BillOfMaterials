@@ -36,6 +36,17 @@ app.post('/assemblies', (req, res) => {
 });
 
 //PUT requests
+app.put('/assemblies/:parentId', (req, res) => {
+  const { parentId } = req.params;
+  const childId = req.body.child.id;
+  store.updateAssembly(parentId, childId, (err, data) => {
+    if (err) {
+      return res.sendStatus(statusCodes.badRequest);
+    }
+    const statusCode = (data === 'updated') ? statusCodes.ok : statusCodes.created;
+    res.sendStatus(statusCode);
+  });
+});
 
 //DELETE requests
 

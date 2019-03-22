@@ -24,20 +24,6 @@ store.getAllParts = (callback) => {
   callback(null, model.nodeOrg.allNodes);
 };
 
-store.updateAssembly = (parts, callback) => {
-  const { parent, child } = parts,
-  parentId = parent.id,
-  childId = child.id;
-
-  if (!model.nodes[parentId] || !model.nodes[childId]) {
-    return callback('Invalid Part ID', null);
-  }
-
-  if (model.nodes[parentId].location === 'orphans') {
-    return store.createNewAssembly(parts, callback);
-  }
-};
-
 store.createNewAssembly = (parts, callback) => {
   const { parent, child } = parts,
   parentId = parent.id,
@@ -47,11 +33,47 @@ store.createNewAssembly = (parts, callback) => {
   }
 
   model.nodes[parentId].part.children.push(model.nodes[childId]);
-  store.updateNodeLocation(parentId, model.nodes[parentId].location, 'topLvlAssemblies');
-  store.updateAssemblyChildNode(childId, parentId, callback);
+  store.updateAssemblyParentNode(parentId, callback);
+  store.updateAssemblyChildNode(childId, callback);
 };
 
-store.updateAssemblyChildNode = (childId, parentId, callback) => {
+store.updateAssembly = (parentId, childId, callback) => {
+  if (!model.nodes[parentId] || !model.nodes[childId]) {
+    return callback('Invalid Part ID', null);
+  }
+
+  const parentNode = model.nodes[parentId],
+  childNode = model.nodes[childId];
+
+  if (parentNode.children.includes(childNode)) {
+    return callback('Child already exists as component on parent assembly', null);
+  }
+
+  if (parentNode.location === 'orphans') {
+    return store.createNewAssembly({'parent': parentNode, 'child': childNode}, callback);
+  }
+
+  parentNode.children.push(model.node[childId]);
+  store.updateAssemblyParentNode(parentId, callback);
+  store.updateAssemblyChildNode(childId, callback);
+};
+
+store.updateAssemblyParentNode = (parentId, callback) => {
+  let newParentLocation;
+  const currentLocation = model.nodes[parentId].location;
+
+  if (currentLocation === 'orphans') {
+    newParentLocation = 'topLvlAssemblies';
+  } else if (currentLocation === 'components') {
+    newParentLocation = 'subAssemblies';
+  }
+
+  if (newParentLocation) {
+    store.updateNodeLocation(parentId, currentLocation, newParentLocation);
+  }
+};
+
+store.updateAssemblyChildNode = (childId, callback) => {
   let newChildLocation;
   if (model.nodes[childId].location === 'orphans') {
     newChildLocation = 'components';
@@ -59,14 +81,13 @@ store.updateAssemblyChildNode = (childId, parentId, callback) => {
     newChildLocation = 'subAssemblies';
   } else if (model.nodes[childId].location === 'components' ||
             model.nodes[childId].location === 'subAssemblies') {
-    return callback(null, [model.nodes[parentId], model.nodes[childId]]);
+    return callback(null, 'created');
   }
   store.updateNodeLocation(childId, model.nodes[childId].location, newChildLocation);
-  callback(null, [childId, parentId]);
+  callback(null, 'created');
 };
 
 store.updateNodeLocation = (partId, oldLocation, newLocation) => {
-  console.log(oldLocation, model.nodeOrg[oldLocation]);
   model.nodeOrg[oldLocation] = model.nodeOrg[oldLocation].filter((node) => {
     return node.part.id !== partId;
   });
