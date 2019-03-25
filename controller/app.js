@@ -29,15 +29,6 @@ app.post('/parts', (req, res) => {
   });
 });
 
-app.post('/assemblies', (req, res) => {
-  store.createNewAssembly(req.body, (err, data) => {
-    if (err) {
-      return res.status(statusCodes.badRequest).send(err);
-    }
-    res.sendStatus(statusCodes.created);
-  });
-});
-
 //PUT requests
 app.put('/assemblies/:parentId', (req, res) => {
   const { parentId } = req.params;
