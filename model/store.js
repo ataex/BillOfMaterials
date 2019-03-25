@@ -103,4 +103,18 @@ store.getAllAssemblies = (callback) => {
   callback(null, allAssemblies);
 };
 
+store.getAllTopLevelAssemblies = (callback) => {
+  if (!model.nodeOrg.topLvlAssembly) {
+    return callback(errorMessages.cantFindTopLevelAssemblies, null);
+  }
+  callback(null, model.nodeOrg.topLvlAssembly);
+};
+
+store.getAllSubAssemblies = (callback) => {
+  if (!model.nodeOrg.subAssembly) {
+    return callback(errorMessages.cantFindSubAssemblies, null);
+  }
+  callback(null, model.nodeOrg.subAssembly);
+};
+
 module.exports = store;

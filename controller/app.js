@@ -28,6 +28,24 @@ app.get('/assemblies', (req, res) => {
   });
 });
 
+app.get('/assemblies/top', (req, res) => {
+  store.getAllTopLevelAssemblies((err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/assemblies/sub', (req, res) => {
+  store.getAllSubAssemblies((err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
 //POST requests
 app.post('/parts', (req, res) => {
   store.createPart(req.body, (err, data) => {
