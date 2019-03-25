@@ -131,4 +131,40 @@ store.getAllSubAssemblies = (callback) => {
   callback(null, model.nodeOrg.subAssembly);
 };
 
+store.getAllAssemblyParts = (assemblyId, callback) => {
+  if (!model.nodes[assemblyId]) {
+    return callback(errorMessages.partDoesNotExist, null);
+  }
+
+  if (model.nodes[assemblyId].type !== 'topLvlAssembly' &&
+      model.nodes[assemblyId].type !== 'subAssembly') {
+    return callback(errorMessages.notAnAssembly, null);
+  }
+
+  const childQueue = model.nodes[assemblyId].children.slice();
+  const listOfChildren = [];
+  while (childQueue.length) {
+    const part = childQueue.pop();
+    if (part.children) {
+      childQueue.push(...part.children.slice());
+    }
+    const {children, ...partWithNoChildParam} = part;
+    listOfChildren.push(partWithNoChildParam);
+  }
+  callback(null, listOfChildren);
+};
+
+store.getTopLevelAssemblyParts = (assemblyId, callback) => {
+  if (!model.nodes[assemblyId]) {
+    return callback(errorMessages.partDoesNotExist, null);
+  }
+
+  if (model.nodes[assemblyId].type !== 'topLvlAssembly' &&
+    model.nodes[assemblyId].type !== 'subAssembly') {
+    return callback(errorMessages.notAnAssembly, null);
+  }
+
+  callback(null, model.nodes[assemblyId].children);
+};
+
 module.exports = store;

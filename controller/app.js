@@ -64,6 +64,26 @@ app.get('/assemblies/sub', (req, res) => {
   });
 });
 
+app.get('/assemblies/:assemblyId/components', (req, res) => {
+  const { assemblyId } = req.params;
+  store.getAllAssemblyParts(assemblyId, (err,data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/assemblies/:assemblyId/components/top', (req, res) => {
+  const { assemblyId } = req.params;
+  store.getTopLevelAssemblyParts(assemblyId, (err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
 //POST requests
 app.post('/parts', (req, res) => {
   store.createPart(req.body, (err, data) => {
