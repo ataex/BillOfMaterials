@@ -37,6 +37,16 @@ app.get('/parts/orphans', (req, res) => {
   });
 });
 
+app.get('/parts/:partId/assemblies', (req, res) => {
+  const { partId } = req.params;
+  store.getAllContainingAssemblies(partId, (err, data) => {
+    if (err) {
+      res.status(statusCode.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
 app.get('/assemblies', (req, res) => {
   store.getAllAssemblies((err, data) => {
     if (err) {

@@ -109,6 +109,40 @@ store.getAllOrphans = (callback) => {
   callback(null, model.nodeOrg.orphan);
 };
 
+store.getAllContainingAssemblies = (partId, callback) => {
+  if (!model.nodes[partId]) {
+    return callback(errorMessages.partDoesNotExist, null);
+  }
+
+  if (model.nodes[partId].type === 'topLvlAssembly' ||
+    model.nodes[partId].type === 'orphan') {
+    return callback(null, []);
+  }
+
+  const containingAssemblies = store.searchforContainingAssemblies(partId);
+  callback(null, containingAssemblies);
+};
+
+store.searchforContainingAssemblies = (partId) => {
+  const containingAssemblies = [];
+  const assemblies = model.nodeOrg.topLvlAssembly.concat(model.nodeOrg.subAssembly);
+  for (let i = 0; i < assemblies.length; i++) {
+    const assembly = assemblies[i];
+    let childQueue = assembly.children.slice();
+    while (childQueue.length) {
+      const child = childQueue.pop();
+      if (child.id === partId) {
+        const {children, ...partWithNoChildParam} = assembly;
+        containingAssemblies.push(partWithNoChildParam);
+        childQueue = [];
+      } else {
+        childQueue.push(...child.children.slice());
+      }
+    }
+  }
+  return containingAssemblies;
+};
+
 store.getAllAssemblies = (callback) => {
   if (!model.nodeOrg.topLvlAssembly || !model.nodeOrg.subAssembly) {
     return callback(errorMessages.cantFindAssemblies, null);
@@ -141,6 +175,11 @@ store.getAllAssemblyParts = (assemblyId, callback) => {
     return callback(errorMessages.notAnAssembly, null);
   }
 
+  const listOfChildren = store.iterateThroughAssemblyChildren(assemblyId);
+  callback(null, listOfChildren);
+};
+
+store.iterateThroughAssemblyChildren = (assemblyId) => {
   const childQueue = model.nodes[assemblyId].children.slice();
   const listOfChildren = [];
   while (childQueue.length) {
@@ -148,10 +187,13 @@ store.getAllAssemblyParts = (assemblyId, callback) => {
     if (part.children) {
       childQueue.push(...part.children.slice());
     }
-    const {children, ...partWithNoChildParam} = part;
+    const {
+      children,
+      ...partWithNoChildParam
+    } = part;
     listOfChildren.push(partWithNoChildParam);
   }
-  callback(null, listOfChildren);
+  return listOfChildren;
 };
 
 store.getTopLevelAssemblyParts = (assemblyId, callback) => {
