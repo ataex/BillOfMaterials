@@ -95,6 +95,20 @@ store.getAllParts = (callback) => {
   callback(null, model.nodeOrg.allNodes);
 };
 
+store.getAllComponents = (callback) => {
+  if (!model.nodeOrg.component) {
+    return callback(errorMessages.cantFindComponents, null);
+  }
+  callback(null, model.nodeOrg.component);
+};
+
+store.getAllOrphans = (callback) => {
+  if (!model.nodeOrg.orphan) {
+    return callback(errorMessages.cantFindOrphans, null);
+  }
+  callback(null, model.nodeOrg.orphan);
+};
+
 store.getAllAssemblies = (callback) => {
   if (!model.nodeOrg.topLvlAssembly || !model.nodeOrg.subAssembly) {
     return callback(errorMessages.cantFindAssemblies, null);

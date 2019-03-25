@@ -19,6 +19,24 @@ app.get('/parts', (req, res) => {
   });
 });
 
+app.get('/parts/components', (req, res) => {
+  store.getAllComponents((err, data) => {
+    if (err) {
+      res.status(statusCode.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/parts/orphans', (req, res) => {
+  store.getAllOrphans((err, data) => {
+    if (err) {
+      res.status(statusCode.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
 app.get('/assemblies', (req, res) => {
   store.getAllAssemblies((err, data) => {
     if (err) {
