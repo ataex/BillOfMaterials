@@ -19,18 +19,84 @@ app.get('/parts', (req, res) => {
   });
 });
 
-//POST requests
-app.post('/parts', (req, res) => {
-  store.createPart(req.body, (err, data) => {
+app.get('/parts/components', (req, res) => {
+  store.getAllComponents((err, data) => {
     if (err) {
-      return res.status(statusCodes.badRequest).send(err);
+      res.status(statusCode.badRequest).send(err);
     }
-    res.sendStatus(statusCodes.created);
+    res.status(statusCodes.ok).json(data);
   });
 });
 
-app.post('/assemblies', (req, res) => {
-  store.createNewAssembly(req.body, (err, data) => {
+app.get('/parts/orphans', (req, res) => {
+  store.getAllOrphans((err, data) => {
+    if (err) {
+      res.status(statusCode.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/parts/:partId/assemblies', (req, res) => {
+  const { partId } = req.params;
+  store.getAllContainingAssemblies(partId, (err, data) => {
+    if (err) {
+      res.status(statusCode.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/assemblies', (req, res) => {
+  store.getAllAssemblies((err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/assemblies/top', (req, res) => {
+  store.getAllTopLevelAssemblies((err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/assemblies/sub', (req, res) => {
+  store.getAllSubAssemblies((err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/assemblies/:assemblyId/components', (req, res) => {
+  const { assemblyId } = req.params;
+  store.getAllAssemblyParts(assemblyId, (err,data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+app.get('/assemblies/:assemblyId/components/top', (req, res) => {
+  const { assemblyId } = req.params;
+  store.getTopLevelAssemblyParts(assemblyId, (err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
+//POST requests
+app.post('/parts', (req, res) => {
+  store.createPart(req.body, (err, data) => {
     if (err) {
       return res.status(statusCodes.badRequest).send(err);
     }
