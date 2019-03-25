@@ -19,6 +19,15 @@ app.get('/parts', (req, res) => {
   });
 });
 
+app.get('/assemblies', (req, res) => {
+  store.getAllAssemblies((err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
 //POST requests
 app.post('/parts', (req, res) => {
   store.createPart(req.body, (err, data) => {

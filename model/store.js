@@ -3,6 +3,7 @@ const model = require('./model.js');
 const errorMessages = require('../constants/errorMessages.js');
 const store = {};
 
+//Modifying part/assembly data
 store.createPart = (partInfo, callback) => {
   const { id, name, description } = partInfo;
   if (model.nodes[id]) {
@@ -12,13 +13,6 @@ store.createPart = (partInfo, callback) => {
   model.nodeOrg.allNodes.push(model.nodes[id]);
   model.nodeOrg.orphan.push(model.nodes[id]);
   return callback(null, model.nodes[id]);
-};
-
-store.getAllParts = (callback) => {
-  if (!model.nodeOrg.allNodes) {
-    return callback(errorMessages.cantFindParts, null);
-  }
-  callback(null, model.nodeOrg.allNodes);
 };
 
 store.createNewAssembly = (parts, callback) => {
@@ -91,6 +85,22 @@ store.updateNodeType = (partId, oldType, newType) => {
   });
   model.nodeOrg[newType].push(model.nodes[partId]);
   model.nodes[partId].type = newType;
+};
+
+//Returning part/assembly data
+store.getAllParts = (callback) => {
+  if (!model.nodeOrg.allNodes) {
+    return callback(errorMessages.cantFindParts, null);
+  }
+  callback(null, model.nodeOrg.allNodes);
+};
+
+store.getAllAssemblies = (callback) => {
+  if (!model.nodeOrg.topLvlAssembly || !model.nodeOrg.subAssembly) {
+    return callback(errorMessages.cantFindAssemblies, null);
+  }
+  const allAssemblies = model.nodeOrg.topLvlAssembly.concat(model.nodeOrg.subAssembly);
+  callback(null, allAssemblies);
 };
 
 module.exports = store;
