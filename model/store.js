@@ -24,8 +24,8 @@ store.createNewAssembly = (parts, callback) => {
   }
 
   model.nodes[parentId].children.push(model.nodes[childId]);
-  store.updateAssemblyParentNode.childAdded(parentId, callback);
-  store.updateAssemblyChildNode.childAdded(childId, callback);
+  store.updateAssemblyParentNodeType.childAdded(parentId, callback);
+  store.updateAssemblyChildNodeType.childAdded(childId, callback);
 };
 
 store.updateAssembly = (parentId, childId, callback) => {
@@ -45,8 +45,8 @@ store.updateAssembly = (parentId, childId, callback) => {
   }
 
   parentNode.children.push(model.nodes[childId]);
-  store.updateAssemblyParentNode.childAdded(parentId, callback);
-  store.updateAssemblyChildNode.childAdded(childId, callback);
+  store.updateAssemblyParentNodeType.childAdded(parentId, callback);
+  store.updateAssemblyChildNodeType.childAdded(childId, callback);
 };
 
 ////////////// Deleting parts entirely or removing parts from parent assemblies ///////////////////
@@ -94,12 +94,12 @@ store.removeChild = (parentId, childId, callback) => {
     }
     childContainingAssemblies = data;
   });
-  store.updateAssemblyParentNode.childRemoved(parentId, parent.children);
-  store.updateAssemblyChildNode.childRemoved(childId, childContainingAssemblies, callback);
+  store.updateAssemblyParentNodeType.childRemoved(parentId, parent.children);
+  store.updateAssemblyChildNodeType.childRemoved(childId, childContainingAssemblies, callback);
 };
 
 /////////////// Utilities for updating parts and assemblies /////////////////////////
-store.updateAssemblyParentNode = {
+store.updateAssemblyParentNodeType = {
   childAdded: (parentId) => {
     let newParentType;
     let currentType = model.nodes[parentId].type;
@@ -129,7 +129,7 @@ store.updateAssemblyParentNode = {
   },
 };
 
-store.updateAssemblyChildNode = {
+store.updateAssemblyChildNodeType = {
   childAdded: (childId, callback) => {
     let newChildType;
     const currentChildType = model.nodes[childId].type;
