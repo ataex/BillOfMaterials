@@ -19,7 +19,7 @@ Steps 5 through 7 will instantiate sample data for four different variations of 
 
 ###### POST Requests
 1. POST /parts
-  - Body: {"id":"partIdNumber","name":"namePart"}
+    - Body: {"id":"partIdNumber","name":"namePart"}
     - Creates the specified part if does not already exist
 ###### PUT Requests
 1. PUT /assemblies/:parentId
