@@ -7,7 +7,10 @@ module.exports = {
   cantFindSubAssemblies: 'Storage of sub-assemblies does not exist. Please ensure that the service has been started properly.',
   notAnAssembly: 'The part id entered is not an assembly and therefor does not have associated children.',
   partDoesNotExist: 'Invalid part id, part does not exist.',
+  parentDoesNotExist: 'Invalid part id, parent does not exist.',
+  childDoesNotExist: 'Invalid part id, child does not exist',
   invPartID: 'Invalid Part ID. Child and/or parent part does not exist.',
   partAlreadyExists: 'Part already exists.',
-  alreadyChild: 'Child already exists as component on parent assembly.'
+  alreadyChild: 'Child already exists as component on parent assembly.',
+  notAChild: 'Child part is not a component of parent assembly.',
 };

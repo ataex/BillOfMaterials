@@ -118,6 +118,25 @@ app.put('/assemblies/:parentId', (req, res) => {
 });
 
 //DELETE requests
+app.delete('/parts', (req, res) => {
+  store.deletePart(req.body, (err, data) => {
+    if (err) {
+      return res.status(statusCodes.badRequest).send(err);
+    }
+    res.sendStatus(statusCodes.accepted);
+  });
+});
+
+app.delete('/assemblies/:parentId', (req, res) => {
+  const { parentId } = req.params;
+  const childId = req.body.child.id;
+  store.removeChild(parentId, childId, (err, data) => {
+    if (err) {
+      return res.status(statusCodes.badRequest).send(err);
+    }
+    res.sendStatus(statusCodes.accepted);
+  });
+});
 
 //Start Up
 app.listen(3000, (err) => {
