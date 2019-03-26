@@ -18,6 +18,11 @@ Step 4 will start the service and the api will be listening on your local machin
 
 Steps 5 through 7 will instantiate sample data for four different variations of pens. The shell script in step 7 initally runs the shell script createParts.sh, waits for that to finish, then runs createSubAssem.sh and createCompletePens.sh in parallel. The last two shell scripts can be run in parallel since the service is agnostic with regards to how sub-assemblies and top-level-assemblies are constructed.
 
+##Querying the Data
+I highly recommend using postman to query the data. It provides the information back in a format that is much easier to read than on a terminal. I have provided a link to a workspace that I have already set up with some sample queries. 
+###### PostMan Link
+https://app.getpostman.com/join-team?invite_code=df27f4afcfa882b6e3fe323dbf5e23e8
+
 ## API Reference
 
 ###### POST Requests
@@ -30,22 +35,24 @@ Steps 5 through 7 will instantiate sample data for four different variations of 
         - Adds the part specified in the body as a child of the part specified in the request parameter
 ###### GET Requests
 1. GET /parts
-    - Returns all of parts
-2. GET /parts/components
+    - Returns all parts
+2. GET /parts/id/:partId
+    - Returns information on specified part
+3. GET /parts/components
     - Returns all component parts
-3. GET /parts/orphans
+4. GET /parts/orphans
     - Returns all orphan parts
-4. GET /assemblies
+5. GET /assemblies
     - Returns all assemblies
-5. GET /assemblies/top
+6. GET /assemblies/top
     - Returns all top level assemblies
-6. GET /assemblies/sub
+7. GET /assemblies/sub
     - Returns all sub-assemblies
-7. GET /assemblies/:assemblyId/components
+8. GET /assemblies/:assemblyId/components
     - Returns all parts that make up a specified assembly
-8. GET /assemblies/:assemblyId/components/top
+9. GET /assemblies/:assemblyId/components/top
     - Returns all first level (direct children) of a specified assembly
-9. GET /parts/:partId/assemblies
+10. GET /parts/:partId/assemblies
     - Returns a list of all assemblies that the specified part
 ###### DELETE Requests
 1. DELETE /parts/:partId
