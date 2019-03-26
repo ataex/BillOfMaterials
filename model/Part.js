@@ -1,8 +1,7 @@
 let Part = class {
-  constructor(id, name, description) {
+  constructor(id, name) {
     this.id = id;
     this.name = name;
-    this.description = description;
     this.type = 'orphan';
     this.children = [];
   }
