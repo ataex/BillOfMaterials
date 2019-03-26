@@ -19,6 +19,16 @@ app.get('/parts', (req, res) => {
   });
 });
 
+app.get('/parts/:partId', (req, res) => {
+  const { partId } = req.params;
+  store.getPart(partId, (err, data) => {
+    if (err) {
+      res.status(statusCodes.badRequest).send(err);
+    }
+    res.status(statusCodes.ok).json(data);
+  });
+});
+
 app.get('/parts/components', (req, res) => {
   store.getAllComponents((err, data) => {
     if (err) {

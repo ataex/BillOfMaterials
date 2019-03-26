@@ -195,6 +195,13 @@ store.getAllParts = (callback) => {
   callback(null, model.nodeOrg.allNodes);
 };
 
+store.getPart = (partId, callback) => {
+  if (!model.nodes[partId]) {
+    return callback(errorMessages.partDoesNotExist);
+  }
+  callback(null, model.nodes[partId]);
+};
+
 store.getAllComponents = (callback) => {
   if (!model.nodeOrg.component) {
     return callback(errorMessages.cantFindComponents, null);
