@@ -2,8 +2,8 @@
 Hello Sila Data Systems Team! Thank you for taking the time to look over my solution to your coding challenge. Below you will find all the information necessary to start, interact, and understand my solution.
 
 ## Starting and Instantiating the Service
-1. Clone the repo down on to a local machine
-2. Navigate in to the root of the directory
+1. Clone the repo down on to a local machine ($ git clone https://github.com/jimMartin4321/BillOfMaterials.git)
+2. $ cd BillOfMaterials
 3. $ npm install
 4. $ npm start
 5. In an other terminal window, navigate back to the root of the directory
