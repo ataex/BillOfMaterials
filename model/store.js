@@ -3,7 +3,7 @@ const model = require('./model.js');
 const errorMessages = require('../constants/errorMessages.js');
 const store = {};
 
-//Modifying part/assembly data
+////////////////// Creating and updating parts/assemblies //////////////////////
 store.createPart = (partInfo, callback) => {
   const { id, name, description } = partInfo;
   if (model.nodes[id]) {
@@ -24,8 +24,8 @@ store.createNewAssembly = (parts, callback) => {
   }
 
   model.nodes[parentId].children.push(model.nodes[childId]);
-  store.updateAssemblyParentNode(parentId, callback);
-  store.updateAssemblyChildNode(childId, callback);
+  store.updateAssemblyParentNode.childAdded(parentId, callback);
+  store.updateAssemblyChildNode.childAdded(childId, callback);
 };
 
 store.updateAssembly = (parentId, childId, callback) => {
@@ -45,38 +45,119 @@ store.updateAssembly = (parentId, childId, callback) => {
   }
 
   parentNode.children.push(model.nodes[childId]);
-  store.updateAssemblyParentNode(parentId, callback);
-  store.updateAssemblyChildNode(childId, callback);
+  store.updateAssemblyParentNode.childAdded(parentId, callback);
+  store.updateAssemblyChildNode.childAdded(childId, callback);
 };
 
-store.updateAssemblyParentNode = (parentId, callback) => {
-  let newParentType;
-  const currentType = model.nodes[parentId].type;
-
-  if (currentType === 'orphan') {
-    newParentType = 'topLvlAssembly';
-  } else if (currentType === 'component') {
-    newParentType = 'subAssembly';
+////////////// Deleting parts entirely or removing parts from parent assemblies ///////////////////
+store.deletePart = (partInfo, callback) => {
+  const { id } = partInfo;
+  if (!model.nodes[id]) {
+    return callback(errorMessages.partDoesNotExist, null);
   }
-
-  if (newParentType) {
-    store.updateNodeType(parentId, currentType, newParentType);
-  }
+  let containingAssemblies;
+  store.getAllContainingAssemblies(id, (err, assemblies) => {
+    containingAssemblies = assemblies;
+  });
+  store.removePartFromAllParentAssemblies(id, containingAssemblies);
+  store.removeAllChildrenFromPart(id);
+  store.removePartFromModel(id);
+  callback(null);
 };
 
-store.updateAssemblyChildNode = (childId, callback) => {
-  let newChildType;
-  const currentChildType = model.nodes[childId].type;
-  if (currentChildType === 'orphan') {
-    newChildType = 'component';
-  } else if (currentChildType === 'topLvlAssembly') {
-    newChildType = 'subAssembly';
-  } else if (currentChildType === 'component' ||
-            currentChildType === 'subAssembly') {
-    return callback(null, 'created');
+store.removeChild = (parentId, childId, callback) => {
+  if (!model.nodes[parentId]) {
+    return callback(errorMessages.parentDoesNotExist, null);
   }
-  store.updateNodeType(childId, currentChildType, newChildType);
-  callback(null, 'created');
+  if (!model.nodes[childId]) {
+    return callback(errorMessages.childDoesNotExist, null);
+  }
+  let parentChildren;
+  store.getTopLevelAssemblyParts(parentId, (err, data) => {
+    if (err) {
+      parentChildren = [];
+      return;
+    }
+    parentChildren = data.map(child => child.id);
+  });
+  if (!parentChildren.includes(childId)) {
+    return callback(errorMessages.notAChild, null);
+  }
+
+  let childContainingAssemblies;
+  const parent = model.nodes[parentId];
+  parent.children = parent.children.filter(child => child.id !== childId);
+  store.getAllContainingAssemblies(childId, (err, data) => {
+    if (!data) {
+      childContainingAssemblies = [];
+      return;
+    }
+    childContainingAssemblies = data;
+  });
+  store.updateAssemblyParentNode.childRemoved(parentId, parent.children);
+  store.updateAssemblyChildNode.childRemoved(childId, childContainingAssemblies, callback);
+};
+
+/////////////// Utilities for updating parts and assemblies /////////////////////////
+store.updateAssemblyParentNode = {
+  childAdded: (parentId) => {
+    let newParentType;
+    let currentType = model.nodes[parentId].type;
+
+    if (currentType === 'orphan') {
+      newParentType = 'topLvlAssembly';
+    } else if (currentType === 'component') {
+      newParentType = 'subAssembly';
+    }
+
+    if (newParentType) {
+      store.updateNodeType(parentId, currentType, newParentType);
+    }
+  },
+  childRemoved: (parentId, children) => {
+    let newParentType;
+    const currentType = model.nodes[parentId].type;
+    const hasChildren = children.length > 0;
+    if (currentType === 'topLvlAssembly' && !hasChildren) {
+      newParentType = 'orphan';
+    } else if (currentType === 'subAssembly' && !hasChildren) {
+      newParentType = 'component';
+    }
+    if (newParentType) {
+      store.updateNodeType(parentId, currentType, newParentType);
+    }
+  },
+};
+
+store.updateAssemblyChildNode = {
+  childAdded: (childId, callback) => {
+    let newChildType;
+    const currentChildType = model.nodes[childId].type;
+    if (currentChildType === 'orphan') {
+      newChildType = 'component';
+    } else if (currentChildType === 'topLvlAssembly') {
+      newChildType = 'subAssembly';
+    } else if (currentChildType === 'component' ||
+      currentChildType === 'subAssembly') {
+      return callback(null, 'created');
+    }
+    store.updateNodeType(childId, currentChildType, newChildType);
+    callback(null, 'created');
+  },
+  childRemoved: (childId, containingAssemblies, callback) => {
+    let newChildType;
+    const currentChildType = model.nodes[childId].type;
+    const belongsToAssembly = containingAssemblies.length > 0;
+    if (currentChildType === 'component' && !belongsToAssembly) {
+      newChildType = 'orphan';
+    } else if (currentChildType === 'subAssembly' && !belongsToAssembly) {
+      newChildType = 'topLvlAssembly';
+    }
+    if (newChildType) {
+      store.updateNodeType(childId, currentChildType, newChildType);
+    }
+    callback(null);
+  },
 };
 
 store.updateNodeType = (partId, oldType, newType) => {
@@ -87,7 +168,27 @@ store.updateNodeType = (partId, oldType, newType) => {
   model.nodes[partId].type = newType;
 };
 
-//Returning part/assembly data
+store.removePartFromAllParentAssemblies = (partId, containingAssemblies) => {
+  for (let i = 0; i < containingAssemblies.length; i++) {
+    store.removeChild(containingAssemblies[i].id, partId, () => {});
+  }
+};
+
+store.removeAllChildrenFromPart = (partId) => {
+  const part = model.nodes[partId];
+  const children = part.children;
+  for (let i = 0; i < children.length; i++) {
+    store.removeChild(partId, children[i].id, () => {});
+  }
+};
+
+store.removePartFromModel = (partId) => {
+  const type = model.nodes[partId].type;
+  model.nodeOrg[type] = model.nodeOrg[type].filter(currentPart => currentPart.id !== partId);
+  delete model.nodes[partId];
+};
+
+////////////////////// Returning part/assembly data /////////////////////////
 store.getAllParts = (callback) => {
   if (!model.nodeOrg.allNodes) {
     return callback(errorMessages.cantFindParts, null);
@@ -121,26 +222,6 @@ store.getAllContainingAssemblies = (partId, callback) => {
 
   const containingAssemblies = store.searchforContainingAssemblies(partId);
   callback(null, containingAssemblies);
-};
-
-store.searchforContainingAssemblies = (partId) => {
-  const containingAssemblies = [];
-  const assemblies = model.nodeOrg.topLvlAssembly.concat(model.nodeOrg.subAssembly);
-  for (let i = 0; i < assemblies.length; i++) {
-    const assembly = assemblies[i];
-    let childQueue = assembly.children.slice();
-    while (childQueue.length) {
-      const child = childQueue.pop();
-      if (child.id === partId) {
-        const {children, ...partWithNoChildParam} = assembly;
-        containingAssemblies.push(partWithNoChildParam);
-        childQueue = [];
-      } else {
-        childQueue.push(...child.children.slice());
-      }
-    }
-  }
-  return containingAssemblies;
 };
 
 store.getAllAssemblies = (callback) => {
@@ -179,23 +260,6 @@ store.getAllAssemblyParts = (assemblyId, callback) => {
   callback(null, listOfChildren);
 };
 
-store.iterateThroughAssemblyChildren = (assemblyId) => {
-  const childQueue = model.nodes[assemblyId].children.slice();
-  const listOfChildren = [];
-  while (childQueue.length) {
-    const part = childQueue.pop();
-    if (part.children) {
-      childQueue.push(...part.children.slice());
-    }
-    const {
-      children,
-      ...partWithNoChildParam
-    } = part;
-    listOfChildren.push(partWithNoChildParam);
-  }
-  return listOfChildren;
-};
-
 store.getTopLevelAssemblyParts = (assemblyId, callback) => {
   if (!model.nodes[assemblyId]) {
     return callback(errorMessages.partDoesNotExist, null);
@@ -207,6 +271,41 @@ store.getTopLevelAssemblyParts = (assemblyId, callback) => {
   }
 
   callback(null, model.nodes[assemblyId].children);
+};
+
+///////////////////// Utilities for returning part/assembly data ////////////////////
+store.searchforContainingAssemblies = (partId) => {
+  const containingAssemblies = [];
+  const assemblies = model.nodeOrg.topLvlAssembly.concat(model.nodeOrg.subAssembly);
+  for (let i = 0; i < assemblies.length; i++) {
+    const assembly = assemblies[i];
+    let childQueue = assembly.children.slice();
+    while (childQueue.length) {
+      const child = childQueue.pop();
+      if (child.id === partId) {
+        const {children, ...partWithNoChildParam} = assembly;
+        containingAssemblies.push(partWithNoChildParam);
+        childQueue = [];
+      } else {
+        childQueue.push(...child.children.slice());
+      }
+    }
+  }
+  return containingAssemblies;
+};
+
+store.iterateThroughAssemblyChildren = (assemblyId) => {
+  const childQueue = model.nodes[assemblyId].children.slice();
+  const listOfChildren = [];
+  while (childQueue.length) {
+    const part = childQueue.pop();
+    if (part.children) {
+      childQueue.push(...part.children.slice());
+    }
+    const { children, ...partWithNoChildParam } = part;
+    listOfChildren.push(partWithNoChildParam);
+  }
+  return listOfChildren;
 };
 
 module.exports = store;
