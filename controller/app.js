@@ -118,8 +118,9 @@ app.put('/assemblies/:parentId', (req, res) => {
 });
 
 //DELETE requests
-app.delete('/parts', (req, res) => {
-  store.deletePart(req.body, (err, data) => {
+app.delete('/parts/:partId', (req, res) => {
+  const { partId } = req.params;
+  store.deletePart(partId, (err, data) => {
     if (err) {
       return res.status(statusCodes.badRequest).send(err);
     }
