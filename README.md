@@ -1,7 +1,7 @@
-#Bill Of materials restful API
+# Bill Of materials restful API
 Hello Sila Data Systems Team! Thank you for taking the time to look over my solution to your coding challenge. Below you will find all the information necessary to start, interact, and understand my solution.
 
-##Starting and Instantiating the Service
+## Starting and Instantiating the Service
 1. Clone the repo down on to a local machine
 2. Navigate in to the root of the directory
 3. $ npm install
@@ -15,7 +15,7 @@ Steps 1 through 3 will ensure that the service is locally installed on your mach
 Step 4 will start the service and the api will be listening on your local machine at port 3000.
 Steps 5 through 7 will instantiate sample data for four different variations of pens. The shell script in step 7 initally runs the shell script createParts.sh, waits for that to finish, then runs createSubAssem.sh and createCompletePens.sh in parallel. The last two shell scripts can be run in parallel since the service is agnostic with regards to how sub-assemblies and top-level-assemblies are constructed.
 
-##API Reference
+## API Reference
 
 ###### POST Requests
 1. POST /parts
@@ -51,5 +51,5 @@ Steps 5 through 7 will instantiate sample data for four different variations of 
   - Body: {"child":{"id":"partId"}}
     - This will remove the specified part from the parent assembly
 
-##Bonus Enhancement
+## Bonus Enhancement
 The bonus feature that I implemented to enhance funcitonality was denormalizing the data. If you look at the file model/model.js you can see that there is an object nodes and then nodesOrg. Nodes is library that holds all of the nodes, their information, and their children. NodesOrg is a seperate object that holds essentially copies of these nodes however they are all categorizied based upon what type of part they are. This way when a user wants to get all components, or orphans, or top level assemblies they can do so in constant time. This does however come at a cost. For one their is an increase in memory now that we have the data living in multiple places. Also, updating the data takes longer to process becuase it has to ensure that it is updated correctly in all locations. When thinking about the use case I figured that it would be much more important to get users information quickly and was worth the sacrifice of a bit more time necessary for anyone making changes to the Bill of Materials.
