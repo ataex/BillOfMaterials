@@ -16,6 +16,7 @@ Step 4 will start the service and the api will be listening on your local machin
 Steps 5 through 7 will instantiate sample data for four different variations of pens. The shell script in step 7 initally runs the shell script createParts.sh, waits for that to finish, then runs createSubAssem.sh and createCompletePens.sh in parallel. The last two shell scripts can be run in parallel since the service is agnostic with regards to how sub-assemblies and top-level-assemblies are constructed.
 
 ##API Reference
+
 ###### POST Requests
 1. POST /parts
   - Body: {"id":"partIdNumber","name":"namePart"}
@@ -44,4 +45,11 @@ Steps 5 through 7 will instantiate sample data for four different variations of 
 9. GET /parts/:partId/assemblies
   - Returns a list of all assemblies that the specified part
 ###### DELETE Requests
+1. DELETE /parts/:partId
+  - Deletes the specified part. It also will delete all the part from all of the assemblies it is included in. It also will update all of it's children accordingly.
+2. DELETE /assemblies/:parentId
+  - Body: {"child":{"id":"partId"}}
+    - This will remove the specified part from the parent assembly
 
+##Bonus Enhancement
+The bonus feature that I implemented to enhance funcitonality was denormalizing the data. If you look at the file model/model.js you can see that there is an object nodes and then nodesOrg. Nodes is library that holds all of the nodes, their information, and their children. NodesOrg is a seperate object that holds essentially copies of these nodes however they are all categorizied based upon what type of part they are. This way when a user wants to get all components, or orphans, or top level assemblies they can do so in constant time. This does however come at a cost. For one their is an increase in memory now that we have the data living in multiple places. Also, updating the data takes longer to process becuase it has to ensure that it is updated correctly in all locations. When thinking about the use case I figured that it would be much more important to get users information quickly and was worth the sacrifice of a bit more time necessary for anyone making changes to the Bill of Materials.
