@@ -184,6 +184,7 @@ store.removeAllChildrenFromPart = (partId) => {
 store.removePartFromModel = (partId) => {
   const type = model.nodes[partId].type;
   model.nodeOrg[type] = model.nodeOrg[type].filter(currentPart => currentPart.id !== partId);
+  model.nodeOrg.allNodes = model.nodeOrg.allNodes.filter(currentPart => currentPart.id !== partId);
   delete model.nodes[partId];
 };
 
