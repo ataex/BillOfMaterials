@@ -50,8 +50,7 @@ store.updateAssembly = (parentId, childId, callback) => {
 };
 
 ////////////// Deleting parts entirely or removing parts from parent assemblies ///////////////////
-store.deletePart = (partInfo, callback) => {
-  const { id } = partInfo;
+store.deletePart = (id, callback) => {
   if (!model.nodes[id]) {
     return callback(errorMessages.partDoesNotExist, null);
   }
