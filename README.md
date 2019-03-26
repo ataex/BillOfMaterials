@@ -1,5 +1,5 @@
 # Bill Of materials restful API
-Hello Sila Data Systems Team! Thank you for taking the time to look over my solution to your coding challenge. Below you will find all the information necessary to start, interact, and understand my solution.
+Hello Sila Data Systems Team! Thank you for taking the time to look over my solution to your coding challenge. Below you will find all the information necessary to start, interact with, and understand my solution.
 
 ## Starting and Instantiating the Service
 1. Clone the repo down on to a local machine ($ git clone https://github.com/jimMartin4321/BillOfMaterials.git)
