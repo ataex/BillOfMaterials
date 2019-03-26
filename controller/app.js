@@ -19,7 +19,7 @@ app.get('/parts', (req, res) => {
   });
 });
 
-app.get('/parts/:partId', (req, res) => {
+app.get('/parts/id/:partId', (req, res) => {
   const { partId } = req.params;
   store.getPart(partId, (err, data) => {
     if (err) {
