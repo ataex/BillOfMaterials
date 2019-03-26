@@ -23,33 +23,34 @@ Steps 5 through 7 will instantiate sample data for four different variations of 
         - Creates the specified part if does not already exist
 ###### PUT Requests
 1. PUT /assemblies/:parentId
-  - Body: {"child":{"id":"childPartId"}}
-    - Adds the part specified in the body as a child of the part specified in the request parameter
+      - Body: {"child":{"id":"childPartId"}}
+        - Adds the part specified in the body as a child of the part specified in the request parameter
 ###### GET Requests
 1. GET /parts
-  - Returns all of parts
+    - Returns all of parts
 2. GET /parts/components
-  - Returns all component parts
+    - Returns all component parts
 3. GET /parts/orphans
-  - Returns all orphan parts
+    - Returns all orphan parts
 4. GET /assemblies
-  - Returns all assemblies
+    - Returns all assemblies
 5. GET /assemblies/top
-  - Returns all top level assemblies
+    - Returns all top level assemblies
 6. GET /assemblies/sub
-  - Returns all sub-assemblies
+    - Returns all sub-assemblies
 7. GET /assemblies/:assemblyId/components
-  - Returns all parts that make up a specified assembly
+    - Returns all parts that make up a specified assembly
 8. GET /assemblies/:assemblyId/components/top
-  - Returns all first level (direct children) of a specified assembly
+    - Returns all first level (direct children) of a specified assembly
 9. GET /parts/:partId/assemblies
-  - Returns a list of all assemblies that the specified part
+    - Returns a list of all assemblies that the specified part
 ###### DELETE Requests
 1. DELETE /parts/:partId
-  - Deletes the specified part. It also will delete all the part from all of the assemblies it is included in. It also will update all of it's children accordingly.
+    - Deletes the specified part. It also will delete all the part from all of the assemblies it is included in. It also will update all of it's children accordingly.
 2. DELETE /assemblies/:parentId
-  - Body: {"child":{"id":"partId"}}
-    - This will remove the specified part from the parent assembly
+    - Body: {"child":{"id":"partId"}}
+        - This will remove the specified part from the parent assembly
 
 ## Bonus Enhancement
-The bonus feature that I implemented to enhance funcitonality was denormalizing the data. If you look at the file model/model.js you can see that there is an object nodes and then nodesOrg. Nodes is library that holds all of the nodes, their information, and their children. NodesOrg is a seperate object that holds essentially copies of these nodes however they are all categorizied based upon what type of part they are. This way when a user wants to get all components, or orphans, or top level assemblies they can do so in constant time. This does however come at a cost. For one their is an increase in memory now that we have the data living in multiple places. Also, updating the data takes longer to process becuase it has to ensure that it is updated correctly in all locations. When thinking about the use case I figured that it would be much more important to get users information quickly and was worth the sacrifice of a bit more time necessary for anyone making changes to the Bill of Materials.
+The bonus feature that I implemented to enhance funcitonality was denormalizing the data. If you look at the file model/model.js you can see that there is an object nodes and then nodesOrg. Nodes is library that holds all of the parts, their information, and their children. NodesOrg is a seperate object that holds essentially copies of these parts except that they are all categorizied based upon what type of part they are. This way when a user wants to get all components, or orphans, or top level assemblies they can do so in constant time. 
+This does however come at a cost. For one their is an increase in memory now that we have the data living in multiple places. Also, updating the data takes longer to process becuase it has to ensure that it is updated correctly in all locations. When thinking about the use case I figured that it would be much more important to get users information quickly and was worth the sacrifice of a bit more time necessary for anyone making changes to the Bill of Materials.
