@@ -19,7 +19,7 @@ Step 4 will start the service and the api will be listening on your local machin
 Steps 5 through 7 will instantiate sample data for four different variations of pens. The shell script in step 7 initally runs the shell script createParts.sh, waits for that to finish, then runs createSubAssem.sh and createCompletePens.sh in parallel. The last two shell scripts can be run in parallel since the service is agnostic with regards to how sub-assemblies and top-level-assemblies are constructed.
 
 ## Querying the Data
-I highly recommend using postman to query the data. It provides the information back in a format that is much easier to read than on a terminal. I have provided a link to a workspace that I have already set up with some sample queries. To access the collection in the postman app first open postman, navigate to any workspace, click the import button in the top left hadn corner, select the tab import from link, and finally copy and paste in the link import the collection find just below.
+I highly recommend using postman to query the data. It provides the information back in a format that is much easier to read than opposed to in a terminal. I have provided a link to a collection that has a series of sample queries that should exemplify the API's full functionality. To access the collection in the postman app first open postman, navigate to any workspace, click the import button in the top left hand corner, select the option to import from a link, and finally copy and paste in the link below labeled 'Link to import collection'.
 
 If you do not wish however to use postman to make your sample requests the following link the collection documentation has sample cURL requests as well.
 
