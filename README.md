@@ -21,7 +21,8 @@ Steps 5 through 7 will instantiate sample data for four different variations of 
 ## Querying the Data
 I highly recommend using postman to query the data. It provides the information back in a format that is much easier to read than on a terminal. I have provided a link to a workspace that I have already set up with some sample queries. If you do not wish however to use postman to make your sample requests the following postman link has sample cURL requests as well.
 ###### PostMan Link
-link to import collection: https://www.getpostman.com/collections/428c450f176cf0fad857
+Link to import collection: https://www.getpostman.com/collections/428c450f176cf0fad857
+
 Link to collection documentation: https://red-shadow-3524.postman.co/collections/7017617-14f41427-a13f-489a-97cf-10bfb4b25c23?workspace=8ff98c93-20a1-4553-8275-23a92ff9be8e
 
 ## API Reference
