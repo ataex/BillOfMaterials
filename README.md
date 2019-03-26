@@ -70,3 +70,30 @@ Link to collection documentation: https://red-shadow-3524.postman.co/collections
 The bonus feature that I implemented to enhance funcitonality was denormalizing the data. If you look at the file model/model.js you can see that there is an object nodes and then nodesOrg. Nodes is library that holds all of the parts, their information, and their children. NodesOrg is a seperate object that holds essentially copies of these parts except that they are all categorizied based upon what type of part they are. This way when a user wants to get all components, or orphans, or top level assemblies they can do so in constant time.
 
 This does however come at a cost. For one their is an increase in memory now that we have the data living in multiple places. Also, updating the data takes longer to process becuase it has to ensure that it is updated correctly in all locations. When thinking about the use case I figured that it would be much more important to get users information quickly and was worth the sacrifice of a bit more time necessary for anyone making changes to the Bill of Materials.
+
+## General Code Structure
+1. Controler
+    - app.js
+        - This contains the server and router logic.
+2. Model
+    - model.js
+        - Contains the structure for data storage.
+    - store.js
+        - Contains all of the logic for adding, managing, and updating data.
+    - Part.js
+        - This is the class that each part is instantiated from.
+3. Constants
+    - errorMessages.js
+        - Contains all error messages
+    - statusCodes
+        - Contains all http status codes
+4. Shell Scripts
+    - createParts.sh
+        - Script for creating all necessary parts for four different pen variations
+    - createSubAssem.sh
+        - Script for assembling sub-assemblies
+    - createCompletePens.sh
+        - Script for assembling complete pens
+    - executeInstantiationScripts.sh
+        - This executes all three of the scripts above. For convenience purposes of not having to run all three seperately every time.
+        
