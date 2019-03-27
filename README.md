@@ -19,9 +19,9 @@ Step 4 will start the service and the api will be listening on your local machin
 Steps 5 through 7 will instantiate sample data for four different variations of pens. The shell script in step 7 initally runs the shell script createParts.sh, waits for that to finish, then runs createSubAssem.sh and createCompletePens.sh in parallel. The last two shell scripts can be run in parallel since the service is agnostic with regards to how sub-assemblies and top-level-assemblies are constructed.
 
 ## Querying the Data
-I highly recommend using postman to query the data. It provides the information back in a format that is much easier to read than opposed to in a terminal. I have provided a link to a collection that has a series of sample queries that should exemplify the API's full functionality. To access the collection in the postman app first open postman, navigate to any workspace, click the import button in the top left hand corner, select the option to import from a link, and finally copy and paste in the link below labeled 'Link to import collection'.
+The data can be queried in multiple formats but I recommend using postman. It provides the return information in a format that is much easier to read than opposed to viewing in a terminal. I have provided a link to a collection that has a series of sample queries that should exemplify the API's full functionality. To access the collection in the postman app first open postman, navigate to any workspace, click the import button in the top left hand corner, select the option to import from a link, and finally copy and paste in the link below labeled 'Link to import collection'. You can also click on the collection documentation and in the top right corner there is a 'run in postman' button which also allows you to import the collection.
 
-If you do not wish however to use postman to make your sample requests the following link the collection documentation has sample cURL requests as well.
+If you do not wish however to use postman, the link to the collection documentation has sample cURL requests as well.
 
 ###### PostMan Link
 Link to import collection: https://www.getpostman.com/collections/428c450f176cf0fad857
