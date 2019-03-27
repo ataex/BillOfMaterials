@@ -26,7 +26,7 @@ If you do not wish however to use postman to make your sample requests the follo
 ###### PostMan Link
 Link to import collection: https://www.getpostman.com/collections/428c450f176cf0fad857
 
-Link to collection documentation: https://red-shadow-3524.postman.co/collections/7017617-14f41427-a13f-489a-97cf-10bfb4b25c23?workspace=8ff98c93-20a1-4553-8275-23a92ff9be8e
+Link to collection documentation: https://documenter.getpostman.com/view/7017617/S17tS8bj
 
 ## API Reference
 
